@@ -119,16 +119,16 @@ The memory router compacts each `MEMORY.md` by removing markdown links. Without 
 
 **Before (linked format -- triggers auto-loading):**
 ```
-## Active Projects
-- [Philips CPQ Project](project_philips_cpq.md) - Contract pricing POC, $75K/12-week MVP
-- [East Coast Trip](project_east_coast_trip.md) - 19-contact trip plan
+## Feedback
+- [No em dashes](feedback_no_em_dashes.md) - Never use em dashes in written content
+- [Output location](feedback_output_location.md) - All files go to ~/claude-outputs/
 ```
 
 **After (compact catalog -- no auto-loading):**
 ```
-## Active Projects
-- Philips CPQ Project -- Contract pricing POC, $75K/12-week MVP [project]
-- East Coast Trip -- 19-contact trip plan [project]
+## Feedback
+- No em dashes -- Never use em dashes in written content. Signals LLM text. [feedback]
+- Output location -- All files go to ~/claude-outputs/ with subfolders by type [feedback]
 ```
 
 Each entry keeps the title and description. The `[type]` tag comes from the file's frontmatter. No information is lost -- it's just not linked, so Claude Code doesn't follow the reference automatically.
