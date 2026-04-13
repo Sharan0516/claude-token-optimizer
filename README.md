@@ -1,6 +1,6 @@
 # claude-skill-router
 
-Reduce Claude Code's system prompt overhead by loading skills on-demand instead of all at once.
+Reduce Claude Code's system prompt overhead by loading skills on-demand instead of all at once, and compact memory indexes to prevent bulk loading of memory files.
 
 ## The Problem
 
@@ -83,6 +83,51 @@ Restart Claude Code after running - the new system prompt takes effect on the ne
 
 Moves everything back from `~/.claude/skill-vault/` to `~/.claude/skills/` and removes the router.
 
+## Memory Router
+
+Memory files are a bigger source of system prompt overhead than skills. In a typical heavily-customized setup, the memory system can account for over 90% of system prompt overhead -- skills are only one piece.
+
+Claude Code loads `MEMORY.md` and follows every markdown link in it, pulling each referenced `.md` file into the system prompt. With 6 project directories and 76 memory files totaling ~42,000 tokens, that is the dominant cost.
+
+The memory router compacts each `MEMORY.md` by removing markdown links. Without links, Claude Code loads only the index -- not the files. The actual memory files stay on disk and are read on-demand when relevant to the current task.
+
+### How it works
+
+**Before (linked format -- triggers auto-loading):**
+```
+## Active Projects
+- [Philips CPQ Project](project_philips_cpq.md) - Contract pricing POC for Philips, $75K/12-week MVP
+- [East & West Coast Trip](project_east_west_coast_trip.md) - 19-contact trip plan: Bay Area, Boston, NYC
+```
+
+**After (compact catalog -- no auto-loading):**
+```
+## Active Projects
+- Philips CPQ Project -- Contract pricing POC for Philips, $75K/12-week MVP [project]
+- East & West Coast Trip -- 19-contact trip plan: Bay Area, Boston, NYC [project]
+```
+
+Each entry keeps the title and inline description. The `[type]` tag is read from the file's frontmatter. No information is lost -- it is just not linked, so Claude Code does not follow the reference automatically.
+
+### Usage
+
+```bash
+# Compact all MEMORY.md files across all project directories
+./memory-router.sh
+
+# Restore originals from backups
+./memory-restore.sh
+```
+
+The script:
+- Finds all `~/.claude/projects/*/memory/MEMORY.md` files
+- Backs each one up to `MEMORY.md.backup`
+- Reads frontmatter from linked files to extract type tags
+- Writes a compacted version with no markdown links
+- Is idempotent: safe to run again, skips already-compacted files
+
+Restart Claude Code after running to apply changes.
+
 ## Adding New Skills
 
 When you install a new skill that should be vaulted:
@@ -105,9 +150,9 @@ The skill router tackles one source of prompt overhead. If you're experiencing d
 
 | Source | What loads | Can you optimize it? |
 |---|---|---|
-| Skills (`~/.claude/skills/`) | Description of every skill | Yes - this repo |
+| Skills (`~/.claude/skills/`) | Description of every skill | Yes -- `migrate.sh` (this repo) |
+| Memory files | All files linked from MEMORY.md | Yes -- `memory-router.sh` (this repo) |
 | CLAUDE.md | All instructions, every turn | Split into project-level files |
-| Memory files | All entries via MEMORY.md | Prune stale entries regularly |
 | MCP plugins | Tool registrations for every connected server | Disconnect unused servers |
 | Deferred tools | Name listing of all deferred tools | Managed by extensions |
 
@@ -123,6 +168,8 @@ claude-skill-router/
   migrate.sh              Move skills to vault, install router
   restore.sh              Move skills back, remove router
   add-skill.sh            Add a single new skill to the vault
+  memory-router.sh        Compact MEMORY.md files to prevent bulk loading
+  memory-restore.sh       Restore MEMORY.md files from backups
   LICENSE
 ```
 
