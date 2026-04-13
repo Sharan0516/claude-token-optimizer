@@ -1,4 +1,4 @@
-# claude-skill-router
+# claude-token-optimizer
 
 Reduce Claude Code's system prompt overhead by loading skills on-demand instead of all at once, and compact memory indexes to prevent bulk loading of memory files.
 
@@ -62,8 +62,8 @@ This is the same principle behind lazy loading in software, database indexes, or
 ## Installation
 
 ```bash
-git clone https://github.com/sharan0516/claude-skill-router.git
-cd claude-skill-router
+git clone https://github.com/sharan0516/claude-token-optimizer.git
+cd claude-token-optimizer
 ./migrate.sh
 ```
 
@@ -195,7 +195,7 @@ The principle is the same everywhere: keep the always-loaded footprint small, pu
 ## Repository Structure
 
 ```
-claude-skill-router/
+claude-token-optimizer/
   README.md               This file
   skill-router/
     SKILL.md              Template router - copy to ~/.claude/skills/skill-router/

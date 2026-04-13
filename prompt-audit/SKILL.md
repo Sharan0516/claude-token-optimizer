@@ -221,7 +221,7 @@ For each CONFLICTING pair:
 - Never delete memory files or CLAUDE.md sections -- only rewrite inline or comment out.
 - The audit.py script must exist at `~/.claude/skill-vault/prompt-audit/audit.py`.
   If missing, say: "audit.py is missing from the vault directory. Copy it from
-  ~/claude-skill-router/audit.py first, then re-run the skill."
+  ~/claude-token-optimizer/audit.py first, then re-run the skill."
 - Token counts are estimates (1 token ~ 4 chars). Treat them as directional, not exact.
 - Dates for STALE detection are relative to today's date (available via system-reminder).
 

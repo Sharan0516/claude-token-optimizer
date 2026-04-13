@@ -78,7 +78,7 @@ fi
 skill_name="$(basename "${skill_path}")"
 skill_md="${skill_path}/SKILL.md"
 
-header "claude-skill-router: add-skill"
+header "claude-token-optimizer: add-skill"
 info "Skill: ${skill_name}"
 info "Source: ${skill_path}"
 

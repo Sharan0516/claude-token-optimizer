@@ -24,7 +24,7 @@ header()  { echo -e "\n${BOLD}$*${RESET}"; }
 
 # ── Preflight ─────────────────────────────────────────────────────────────────
 
-header "claude-skill-router: restore"
+header "claude-token-optimizer: restore"
 
 if [[ ! -d "${VAULT_DIR}" ]]; then
   info "No vault found at ${VAULT_DIR} - nothing to restore."

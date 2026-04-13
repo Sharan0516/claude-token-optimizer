@@ -22,7 +22,7 @@ header()  { echo -e "\n${BOLD}$*${RESET}"; }
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-header "claude-skill-router: memory-restore"
+header "claude-token-optimizer: memory-restore"
 
 if [[ ! -d "$PROJECTS_DIR" ]]; then
   error "Projects directory not found: ${PROJECTS_DIR}"

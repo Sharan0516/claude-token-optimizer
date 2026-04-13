@@ -60,7 +60,7 @@ extract_triggers() {
 
 # ── Preflight checks ──────────────────────────────────────────────────────────
 
-header "claude-skill-router: migrate"
+header "claude-token-optimizer: migrate"
 
 if [[ ! -d "${SKILLS_DIR}" ]]; then
   error "~/.claude/skills/ does not exist. Nothing to migrate."
@@ -70,7 +70,7 @@ fi
 router_template="${SCRIPT_DIR}/skill-router/SKILL.md"
 if [[ ! -f "${router_template}" ]]; then
   error "Template not found: ${router_template}"
-  error "Run this script from the claude-skill-router repo directory."
+  error "Run this script from the claude-token-optimizer repo directory."
   exit 1
 fi
 

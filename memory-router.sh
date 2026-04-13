@@ -197,7 +197,7 @@ ${line}"
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-header "claude-skill-router: memory-router"
+header "claude-token-optimizer: memory-router"
 echo ""
 echo -e "  Scans all memory directories under ${BOLD}${PROJECTS_DIR}${RESET}"
 echo -e "  Compacts MEMORY.md files to prevent bulk loading of linked memory files"
