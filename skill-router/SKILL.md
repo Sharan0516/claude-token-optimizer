@@ -32,6 +32,8 @@ You are the skill router for Claude Code. Your job is to match the user's intent
 | legal | review contract, legal review, compare contracts, draft NDA, is this safe to sign | ~/.claude/skill-vault/legal/ |
 | brainstorm | brainstorm, pressure-test, challenge this, run the board, what would advisors say | ~/.claude/skill-vault/brainstorm/ |
 
+| prompt-audit | audit system prompt, prompt audit, check system prompt, why is claude slow, audit memory, memory quality check, optimize claude code | ~/.claude/skill-vault/prompt-audit/ |
+
 <!-- ADD YOUR SKILLS BELOW THIS LINE
      Example row format:
      | skill-name | trigger phrase one, trigger phrase two, trigger phrase three | ~/.claude/skill-vault/skill-name/ |

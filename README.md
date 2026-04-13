@@ -144,6 +144,40 @@ To add a skill manually, just append a row to the catalog table in `~/.claude/sk
 | my-skill | trigger phrase one, trigger phrase two | ~/.claude/skill-vault/my-skill/ |
 ```
 
+## Prompt Audit Skill
+
+The repo includes a built-in audit skill that combines token analysis with memory quality checking. If you use the skill-router, it is automatically available via natural language:
+
+- "audit my system prompt"
+- "why is Claude slow"
+- "check memory quality"
+
+The audit runs three phases:
+
+1. **Token Audit** -- scans skills, CLAUDE.md, memory files, MCP servers, and context store. Shows a breakdown with a Healthy/Moderate/Heavy/Critical verdict.
+2. **Memory Quality Audit** -- classifies every MEMORY.md entry as SELF-CONTAINED, GOOD POINTER, WEAK POINTER, STALE, or CONFLICTING. Suggests fixes for weak entries.
+3. **Recommendations** -- prioritized list of optimizations with estimated impact. Asks before applying any changes.
+
+To install the audit skill into your vault:
+
+```bash
+cp -r prompt-audit ~/.claude/skill-vault/prompt-audit
+```
+
+Then add this row to your skill-router catalog:
+
+```markdown
+| prompt-audit | audit system prompt, prompt audit, why is claude slow, audit memory, memory quality | ~/.claude/skill-vault/prompt-audit/ |
+```
+
+The audit can also be run standalone without the skill-router:
+
+```bash
+python3 audit.py
+python3 audit.py --json
+python3 audit.py --path /path/to/project
+```
+
 ## The Bigger Picture
 
 The skill router tackles one source of prompt overhead. If you're experiencing degraded performance with a heavily customized Claude Code setup, audit everything that loads into the system prompt:
@@ -165,11 +199,15 @@ claude-skill-router/
   README.md               This file
   skill-router/
     SKILL.md              Template router - copy to ~/.claude/skills/skill-router/
+  prompt-audit/
+    SKILL.md              Audit skill for token analysis + memory quality
+    audit.py              Standalone audit script (also used by the skill)
   migrate.sh              Move skills to vault, install router
   restore.sh              Move skills back, remove router
   add-skill.sh            Add a single new skill to the vault
   memory-router.sh        Compact MEMORY.md files to prevent bulk loading
   memory-restore.sh       Restore MEMORY.md files from backups
+  audit.py                Standalone audit script (same as prompt-audit/audit.py)
   LICENSE
 ```
 
