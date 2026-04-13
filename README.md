@@ -1,26 +1,30 @@
 # claude-skill-router
 
-Stop Claude Code from reading thousands of words of skill descriptions on every conversation. Load skills on-demand, only when you need them.
+Reduce Claude Code's system prompt overhead by loading skills on-demand instead of all at once.
 
 ## The Problem
 
-Claude Code loads every skill in `~/.claude/skills/` into the system prompt at the start of each conversation. With 15+ skills installed, that means the model is parsing 10,000-50,000 words of instructions before you type a single character.
+Claude Code loads a description of every skill in `~/.claude/skills/` into the system prompt at the start of each conversation. Each skill adds ~30-50 tokens of description. That's small individually, but it adds up alongside everything else in the system prompt: CLAUDE.md instructions, memory entries, MCP plugin registrations, deferred tool lists, and context store snapshots.
 
-The result: instruction-dropping, hallucinations, and slower responses - because the model is already deep into its context window before the conversation begins.
+With a heavily customized setup (20+ skills, detailed CLAUDE.md, memory files, multiple MCP servers), the combined system prompt can reach 10,000-15,000+ tokens before you type a single character. The more you build on top of Claude Code, the more you load into every conversation, and at some point the model starts competing with its own instructions.
 
-**Before (15 skills loaded always):**
+The result: instruction-dropping, less precise output, and the feeling that Claude got worse when really you just gave it too much to hold in its head at once.
+
+**Before (35 skills registered):**
 ```
-System prompt: ~12,000 tokens
-Tokens available for actual work: ~188,000
-Skills active right now: 15 (you'll use 1)
+Skill descriptions in system prompt: ~1,500 tokens
+Total system prompt (skills + CLAUDE.md + memory + plugins): ~10,000-15,000 tokens
+Every skill loaded: yes, even the 34 you don't need right now
 ```
 
 **After (skill-router pattern):**
 ```
-System prompt: ~400 tokens
-Tokens available for actual work: ~199,600
-Skills active right now: 1 (loaded on-demand)
+Skill descriptions in system prompt: ~200 tokens (router catalog only)
+Total system prompt: reduced by ~1,300 tokens
+Skills available: all of them, loaded on-demand
 ```
+
+The skill router is one piece of a larger principle: **load on-demand, not upfront.** The same approach can be applied to CLAUDE.md sections, memory files, and other sources of prompt overhead.
 
 > Note: This only affects skills you install in `~/.claude/skills/`. Extension skills like `document-skills:*`, `example-skills:*`, and other namespace-prefixed skills are controlled by their respective extensions and are not affected.
 
@@ -29,7 +33,7 @@ Skills active right now: 1 (loaded on-demand)
 Three steps on every turn:
 
 1. **You talk** - Claude reads your message normally
-2. **Router matches** - one lightweight skill (400 tokens) scans a compact catalog table to see if your intent matches any skill trigger
+2. **Router matches** - one lightweight skill scans a compact catalog table to see if your intent matches any skill trigger
 3. **Skill loads** - if matched, the full skill SKILL.md is read from `~/.claude/skill-vault/` and executed; if not, Claude proceeds normally
 
 The catalog is a simple markdown table stored inside the router's `SKILL.md`:
@@ -44,16 +48,16 @@ The catalog is a simple markdown table stored inside the router's `SKILL.md`:
 
 Match is generous - "get me ready for my call with Acme" triggers `meeting-prep` even without exact keyword match. For compound tasks, skills load sequentially.
 
-## Why This Works
+## Why This Matters
 
 Claude Code's context window is shared between:
-- The system prompt (all skills, CLAUDE.md, memory files)
+- The system prompt (skills, CLAUDE.md, memory, plugins, tool registrations)
 - The conversation history
 - Your actual task content
 
-Skills are verbose by design - they contain step-by-step instructions, examples, and edge cases. A typical skill runs 500-3,000 tokens. With 20 skills, that is 10,000-60,000 tokens sitting in the system prompt on every turn, even when you are asking about something completely unrelated.
+Every token in the system prompt is a token the model processes on every turn. Skills are just one contributor, but they're the easiest to optimize because the pattern is straightforward: keep a lightweight index, load the full content only when needed.
 
-The router replaces all of that with a single ~400-token catalog. The full skill content only enters context when it is actually needed, and it enters as a tool call result - not as part of the permanent system prompt overhead.
+This is the same principle behind lazy loading in software, database indexes, or any system where you separate the catalog from the content. You don't load every book in the library to find the one you need. You check the index first.
 
 ## Installation
 
@@ -95,17 +99,19 @@ To add a skill manually, just append a row to the catalog table in `~/.claude/sk
 | my-skill | trigger phrase one, trigger phrase two | ~/.claude/skill-vault/my-skill/ |
 ```
 
-## Before / After Comparison
+## The Bigger Picture
 
-| | Before | After |
+The skill router tackles one source of prompt overhead. If you're experiencing degraded performance with a heavily customized Claude Code setup, audit everything that loads into the system prompt:
+
+| Source | What loads | Can you optimize it? |
 |---|---|---|
-| System prompt tokens | ~12,000-50,000 | ~400 |
-| Skills loaded per turn | All of them | 0 or 1 |
-| Skills available | All installed | All installed |
-| Latency impact | High (parse everything) | Minimal (one catalog read) |
-| Instruction-dropping risk | High with 15+ skills | Near zero |
+| Skills (`~/.claude/skills/`) | Description of every skill | Yes - this repo |
+| CLAUDE.md | All instructions, every turn | Split into project-level files |
+| Memory files | All entries via MEMORY.md | Prune stale entries regularly |
+| MCP plugins | Tool registrations for every connected server | Disconnect unused servers |
+| Deferred tools | Name listing of all deferred tools | Managed by extensions |
 
-The skills are not deleted. They are not disabled. They are simply not loaded until you need them.
+The principle is the same everywhere: keep the always-loaded footprint small, pull details on demand.
 
 ## Repository Structure
 

@@ -219,13 +219,16 @@ echo -e "  Total catalog entries:            ${BOLD}${skill_count}${RESET}"
 echo ""
 
 if [[ "${skill_count}" -gt 0 ]]; then
-  est_before=$(( skill_count * 800 ))
-  est_after=400
+  est_before=$(( skill_count * 40 ))
+  est_after=200
   est_saved=$(( est_before - est_after ))
-  echo -e "  Estimated system prompt reduction:"
-  echo -e "    Before: ~${est_before} tokens  (${skill_count} skills x ~800 tokens avg)"
+  echo -e "  Estimated system prompt reduction (skill descriptions only):"
+  echo -e "    Before: ~${est_before} tokens  (${skill_count} skills x ~40 tokens avg)"
   echo -e "    After:  ~${est_after} tokens   (router catalog only)"
   echo -e "    ${GREEN}Saved:  ~${est_saved} tokens per conversation${RESET}"
+  echo ""
+  echo -e "  Note: Skills are one part of system prompt overhead. CLAUDE.md, memory,"
+  echo -e "  MCP plugins, and tool registrations also contribute. See README for details."
 fi
 
 echo ""
