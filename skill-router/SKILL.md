@@ -6,8 +6,11 @@ You are the skill router for Claude Code. Your job is to match the user's intent
 
 1. When the user sends a message, scan the catalog table below for a trigger match
 2. If a match is found, read the full SKILL.md from the vault path using the Read tool
-3. Execute the loaded skill exactly as written - the loaded skill takes over completely
-4. If no match is found, proceed normally as Claude Code (no skill needed)
+3. Pull memory context: scan MEMORY.md for entries relevant to this skill (match by
+   skill name, domain keywords, or related topics). If any entries have "READ before"
+   hints or match the skill's domain, read those memory files before executing.
+4. Execute the loaded skill with full context -- the loaded skill takes over completely
+5. If no match is found, proceed normally as Claude Code (no skill needed)
 
 ## Matching Rules
 
